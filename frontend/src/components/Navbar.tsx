@@ -2,13 +2,14 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, CheckSquare, Star, Newspaper } from 'lucide-react'
+import { LayoutDashboard, CheckSquare, Star, Newspaper, Settings } from 'lucide-react'
 
 const navItems = [
   { href: '/dashboard', label: '대시보드', icon: LayoutDashboard },
   { href: '/tasks', label: '할 일', icon: CheckSquare },
   { href: '/interests', label: '관심', icon: Star },
   { href: '/news', label: '뉴스', icon: Newspaper },
+  { href: '/settings', label: '설정', icon: Settings },
 ]
 
 export function Navbar() {

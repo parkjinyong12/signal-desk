@@ -4,6 +4,7 @@ import com.signaldesk.application.service.ScheduleRecommendationService;
 import com.signaldesk.domain.entity.*;
 import com.signaldesk.domain.entity.enums.ItemType;
 import com.signaldesk.domain.entity.enums.PriorityLevel;
+import com.signaldesk.domain.repository.BriefingRequestRepository;
 import com.signaldesk.domain.repository.DailyBriefingRepository;
 import com.signaldesk.domain.repository.TaskRepository;
 import com.signaldesk.domain.repository.UserInterestRepository;
@@ -27,6 +28,7 @@ public class BriefingService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
     private final UserInterestRepository interestRepository;
+    private final BriefingRequestRepository briefingRequestRepository;
     private final NewsService newsService;
     private final ScheduleRecommendationService scheduleService;
     private final AiSummaryService aiSummaryService;
@@ -107,6 +109,21 @@ public class BriefingService {
                 .title(point)
                 .build());
         }
+
+        // 전날 추가 요청 항목 포함
+        List<BriefingRequest> requests = briefingRequestRepository
+            .findByUserIdAndTargetDateAndProcessedFalse(userId, LocalDate.now());
+        for (BriefingRequest req : requests) {
+            items.add(DailyBriefingItem.builder()
+                .dailyBriefing(briefing)
+                .itemType(ItemType.REMINDER)
+                .title("[추가 요청] " + req.getContent())
+                .summary("사용자 직접 요청 항목")
+                .build());
+            req.setProcessed(true);
+        }
+        briefingRequestRepository.saveAll(requests);
+
         briefing.setItems(items);
 
         List<Task> tasksToSchedule = new ArrayList<>(mustDoTasks);

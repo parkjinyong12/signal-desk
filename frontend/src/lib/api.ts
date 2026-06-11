@@ -45,3 +45,39 @@ export const briefingApi = {
   generate: () => request<DailyBriefing>('/briefings/generate', { method: 'POST' }),
   byDate: (date: string) => request<DailyBriefing>(`/briefings/${date}`),
 }
+
+export interface BriefingRequest {
+  id: number
+  content: string
+  targetDate: string
+  processed: boolean
+  createdAt: string
+}
+
+export const briefingRequestsApi = {
+  tomorrow: () => request<BriefingRequest[]>('/briefing-requests/tomorrow'),
+  today: () => request<BriefingRequest[]>('/briefing-requests/today'),
+  create: (content: string, targetDate?: string) =>
+    request<BriefingRequest>('/briefing-requests', {
+      method: 'POST',
+      body: JSON.stringify({ content, targetDate }),
+    }),
+  delete: (id: number) => request<void>(`/briefing-requests/${id}`, { method: 'DELETE' }),
+}
+
+export interface RssFeed {
+  id: number
+  name: string
+  url: string
+  category?: string
+  enabled: boolean
+}
+
+export const rssFeedsApi = {
+  list: () => request<RssFeed[]>('/rss-feeds'),
+  create: (data: Partial<RssFeed>) =>
+    request<RssFeed>('/rss-feeds', { method: 'POST', body: JSON.stringify(data) }),
+  toggle: (id: number) => request<RssFeed>(`/rss-feeds/${id}/toggle`, { method: 'PATCH' }),
+  delete: (id: number) => request<void>(`/rss-feeds/${id}`, { method: 'DELETE' }),
+  collect: () => request<{ collected: number }>('/rss-feeds/collect', { method: 'POST' }),
+}

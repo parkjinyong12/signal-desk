@@ -6,23 +6,27 @@ import { ScheduleCard } from '@/components/cards/ScheduleCard'
 import { NewsBriefingCard } from '@/components/cards/NewsBriefingCard'
 import { JudgementCard } from '@/components/cards/JudgementCard'
 import { DeferredTasksCard } from '@/components/cards/DeferredTasksCard'
-import { briefingApi, tasksApi } from '@/lib/api'
+import { BriefingRequestCard } from '@/components/cards/BriefingRequestCard'
+import { briefingApi, tasksApi, briefingRequestsApi, BriefingRequest } from '@/lib/api'
 import { DailyBriefing, Task } from '@/types'
 
 export default function DashboardPage() {
   const [briefing, setBriefing] = useState<DailyBriefing | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
+  const [tomorrowRequests, setTomorrowRequests] = useState<BriefingRequest[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const loadData = useCallback(async () => {
     try {
-      const [b, t] = await Promise.all([
+      const [b, t, r] = await Promise.all([
         briefingApi.today().catch(() => null),
         tasksApi.list(),
+        briefingRequestsApi.tomorrow(),
       ])
       setBriefing(b)
       setTasks(t)
+      setTomorrowRequests(r)
     } catch {
       setError('데이터를 불러오지 못했습니다.')
     }
@@ -65,6 +69,10 @@ export default function DashboardPage() {
 
         <div className="lg:col-span-2">
           <DeferredTasksCard tasks={tasks} />
+        </div>
+
+        <div className="lg:col-span-2">
+          <BriefingRequestCard requests={tomorrowRequests} onRefresh={loadData} />
         </div>
       </div>
     </div>
