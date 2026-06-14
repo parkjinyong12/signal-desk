@@ -60,15 +60,33 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (rssFeedRepository.count() == 0) {
-            // 주요 한국 언론사 RSS 피드 기본값
             Object[][] feeds = {
+                // 경제 종합
                 {"연합뉴스 경제", "https://www.yonhapnews.co.kr/rss/economy.xml", "경제"},
-                {"연합뉴스 주식", "https://www.yonhapnews.co.kr/rss/stock.xml", "투자"},
-                {"한국경제 뉴스", "https://www.hankyung.com/feed/economy", "경제"},
+                {"한국경제", "https://www.hankyung.com/feed/economy", "경제"},
                 {"매일경제", "https://www.mk.co.kr/rss/40300001/", "경제"},
                 {"이데일리 경제", "https://www.edaily.co.kr/rss/economy.xml", "경제"},
+                {"머니투데이", "https://news.mt.co.kr/mtview/rss.html", "경제"},
+                {"서울경제", "https://www.sedaily.com/Rss/RssGet?RssTypeCode=ECONOMY", "경제"},
+                {"파이낸셜뉴스", "https://www.fnnews.com/rss/fn_realnews.xml", "경제"},
+                {"조선비즈", "https://biz.chosun.com/site/data/rss/rss.xml", "경제"},
+                {"한겨레 경제", "https://www.hani.co.kr/rss/economy/", "경제"},
+                // 투자·증권
+                {"연합뉴스 주식", "https://www.yonhapnews.co.kr/rss/stock.xml", "투자"},
+                {"한국경제 증권", "https://www.hankyung.com/feed/finance", "투자"},
+                {"아시아경제", "https://www.asiae.co.kr/rss/stock.htm", "투자"},
                 {"연합인포맥스", "https://einfomax.co.kr/rss/rss.xml", "투자"},
+                {"뉴스1 경제", "https://www.news1.kr/rss/economy.xml", "경제"},
+                {"이투데이", "https://www.etoday.co.kr/rss/news.xml", "경제"},
+                // 부동산
+                {"데일리안 부동산", "https://www.dailian.co.kr/rss/category/real.xml", "부동산"},
+                // 개발·IT
                 {"ZDNet Korea", "https://zdnet.co.kr/rss.asp", "개발"},
+                {"전자신문", "https://www.etnews.com/rss/allArticle.xml", "개발"},
+                {"디지털타임스", "https://www.dt.co.kr/rss/rss.xml", "개발"},
+                {"Bloter", "https://www.bloter.net/feed", "개발"},
+                // AI
+                {"AI타임스", "https://www.aitimes.com/rss/allArticle.xml", "AI"},
             };
 
             for (Object[] row : feeds) {

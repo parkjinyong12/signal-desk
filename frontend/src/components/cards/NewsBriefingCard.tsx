@@ -1,10 +1,17 @@
 'use client'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { DailyBriefingItem } from '@/types'
-import { Newspaper, ExternalLink } from 'lucide-react'
+import { Newspaper, ExternalLink, TrendingUp, AlertCircle, Info } from 'lucide-react'
 
 interface Props {
   items: DailyBriefingItem[]
+}
+
+function scoreStyle(score?: number) {
+  if (!score) return { bar: 'bg-slate-200', label: 'text-slate-400', bg: '' }
+  if (score >= 80) return { bar: 'bg-red-400', label: 'text-red-600', bg: 'border-l-2 border-red-300 bg-red-50/40' }
+  if (score >= 50) return { bar: 'bg-orange-400', label: 'text-orange-600', bg: 'border-l-2 border-orange-300 bg-orange-50/40' }
+  return { bar: 'bg-slate-300', label: 'text-slate-500', bg: '' }
 }
 
 export function NewsBriefingCard({ items }: Props) {
@@ -19,36 +26,60 @@ export function NewsBriefingCard({ items }: Props) {
           <span className="ml-auto text-xs text-slate-400">{newsItems.length}건</span>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 py-3">
         {newsItems.length === 0 ? (
-          <p className="text-slate-400 text-sm text-center py-4">관심 뉴스가 없습니다. 뉴스를 추가하고 요약해보세요.</p>
+          <p className="text-slate-400 text-sm text-center py-6">
+            뉴스가 없습니다. 설정에서 RSS 피드를 확인하거나 직접 추가해보세요.
+          </p>
         ) : (
-          <div className="space-y-4">
-            {newsItems.map((item) => (
-              <div key={item.id} className="border-b border-slate-50 last:border-0 pb-4 last:pb-0">
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <p className="text-sm font-medium text-slate-800 leading-snug">{item.title}</p>
-                  {item.score != null && (
-                    <span className="flex-shrink-0 text-xs font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
-                      {item.score}
-                    </span>
+          <div className="space-y-3">
+            {newsItems.map((item) => {
+              const style = scoreStyle(item.score ?? undefined)
+              return (
+                <div key={item.id} className={`rounded-lg px-3 py-3 ${style.bg || 'bg-slate-50'}`}>
+                  {/* 제목 — 크고 위에 */}
+                  <p className="text-base font-semibold text-slate-900 leading-snug mb-1.5">
+                    {item.title}
+                  </p>
+
+                  {/* 요약 */}
+                  {item.summary && (
+                    <p className="text-sm text-slate-600 leading-relaxed mb-2">{item.summary}</p>
                   )}
+
+                  {/* 왜 중요한가 */}
+                  {item.reason && (
+                    <div className="flex gap-1.5 mb-1.5">
+                      <TrendingUp className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        <span className="font-semibold text-amber-700">왜 중요한가</span>
+                        {' '}{item.reason}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* 추천 행동 */}
+                  {item.recommendedAction && (
+                    <div className="flex gap-1.5 mb-2">
+                      <AlertCircle className="w-3.5 h-3.5 text-brand-500 flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-brand-700 leading-relaxed">
+                        <span className="font-semibold">추천 행동</span>
+                        {' '}{item.recommendedAction}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* 하단: 테마·출처·점수 */}
+                  <div className="flex items-center gap-2 flex-wrap mt-1">
+                    {item.score != null && (
+                      <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${style.label} bg-white border border-current/20`}>
+                        중요도 {item.score}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                {item.summary && (
-                  <p className="text-xs text-slate-600 mb-1.5 leading-relaxed">{item.summary}</p>
-                )}
-                {item.reason && (
-                  <p className="text-xs text-slate-500 mb-1">
-                    <span className="font-medium text-slate-600">왜 중요한가:</span> {item.reason}
-                  </p>
-                )}
-                {item.recommendedAction && (
-                  <p className="text-xs text-brand-600">
-                    <span className="font-medium">추천 행동:</span> {item.recommendedAction}
-                  </p>
-                )}
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </CardContent>
