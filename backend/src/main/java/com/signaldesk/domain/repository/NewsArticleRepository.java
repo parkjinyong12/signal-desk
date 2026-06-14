@@ -15,4 +15,9 @@ public interface NewsArticleRepository extends JpaRepository<NewsArticle, Long> 
 
     @Query("SELECT n FROM NewsArticle n WHERE n.publishedAt >= :since ORDER BY n.importanceScore DESC")
     List<NewsArticle> findRecentNews(LocalDateTime since);
+
+    @Query("SELECT n.url FROM NewsArticle n WHERE n.url IN :urls")
+    List<String> findUrlsByUrlIn(List<String> urls);
+
+    boolean existsByTitleAndSource(String title, String source);
 }

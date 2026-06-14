@@ -1,6 +1,7 @@
 package com.signaldesk.application.service;
 
 import com.rometools.rome.feed.synd.SyndEntry;
+import java.util.Set;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
@@ -51,10 +52,25 @@ public class RssCollectionService {
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed syndFeed = input.build(new XmlReader(new URL(feed.getUrl())));
 
+        // 피드 내 URL 목록을 한 번에 조회해서 메모리에서 중복 체크 (N+1 방지)
+        List<String> entryUrls = syndFeed.getEntries().stream()
+            .map(SyndEntry::getLink)
+            .filter(u -> u != null && !u.isBlank())
+            .toList();
+        Set<String> existingUrls = new java.util.HashSet<>(newsArticleRepository.findUrlsByUrlIn(entryUrls));
+
         for (SyndEntry entry : syndFeed.getEntries()) {
             String url = entry.getLink();
-            if (url == null || newsArticleRepository.findByUrl(url).isPresent()) {
-                continue;
+
+            // URL 없는 기사는 제목+출처로 중복 체크
+            if (url == null || url.isBlank()) {
+                String title = entry.getTitle() != null ? entry.getTitle().trim() : "";
+                if (title.isBlank() || newsArticleRepository.existsByTitleAndSource(title, feed.getName())) {
+                    continue;
+                }
+            } else {
+                if (existingUrls.contains(url)) continue;
+                existingUrls.add(url); // 같은 피드 내 중복 방지
             }
 
             String content = "";
@@ -69,7 +85,7 @@ public class RssCollectionService {
             NewsArticle article = NewsArticle.builder()
                 .source(feed.getName())
                 .title(entry.getTitle() != null ? entry.getTitle().trim() : "")
-                .url(url)
+                .url(url != null && !url.isBlank() ? url : null)
                 .publishedAt(publishedAt != null ? publishedAt : LocalDateTime.now())
                 .content(stripHtml(content))
                 .category(feed.getCategory())
