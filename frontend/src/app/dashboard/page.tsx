@@ -7,26 +7,30 @@ import { NewsBriefingCard } from '@/components/cards/NewsBriefingCard'
 import { JudgementCard } from '@/components/cards/JudgementCard'
 import { DeferredTasksCard } from '@/components/cards/DeferredTasksCard'
 import { BriefingRequestCard } from '@/components/cards/BriefingRequestCard'
-import { briefingApi, tasksApi, briefingRequestsApi, BriefingRequest } from '@/lib/api'
-import { DailyBriefing, Task } from '@/types'
+import { GoalProgressCard } from '@/components/cards/GoalProgressCard'
+import { briefingApi, tasksApi, briefingRequestsApi, goalsApi, BriefingRequest } from '@/lib/api'
+import { DailyBriefing, Task, Goal } from '@/types'
 
 export default function DashboardPage() {
   const [briefing, setBriefing] = useState<DailyBriefing | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
   const [tomorrowRequests, setTomorrowRequests] = useState<BriefingRequest[]>([])
+  const [goals, setGoals] = useState<Goal[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const loadData = useCallback(async () => {
     try {
-      const [b, t, r] = await Promise.all([
+      const [b, t, r, g] = await Promise.all([
         briefingApi.today().catch(() => null),
         tasksApi.list(),
         briefingRequestsApi.tomorrow(),
+        goalsApi.list().catch(() => []),
       ])
       setBriefing(b)
       setTasks(t)
       setTomorrowRequests(r)
+      setGoals(g)
     } catch {
       setError('데이터를 불러오지 못했습니다.')
     }
@@ -66,6 +70,10 @@ export default function DashboardPage() {
         <ScheduleCard blocks={planBlocks} />
         <NewsBriefingCard items={items} />
         <JudgementCard items={items} />
+
+        <div className="lg:col-span-2">
+          <GoalProgressCard goals={goals} />
+        </div>
 
         <div className="lg:col-span-2">
           <DeferredTasksCard tasks={tasks} />

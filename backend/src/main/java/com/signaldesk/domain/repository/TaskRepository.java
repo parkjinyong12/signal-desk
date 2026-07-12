@@ -23,4 +23,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     long countByGoals_Id(Long goalId);
     long countByGoals_IdAndStatus(Long goalId, TaskStatus status);
     List<Task> findByGoals_Id(Long goalId);
+
+    @Query("SELECT g.id, COUNT(t) FROM Task t JOIN t.goals g WHERE g.user.id = :userId GROUP BY g.id")
+    List<Object[]> countLinkedGroupedByUser(Long userId);
+
+    @Query("SELECT g.id, COUNT(t) FROM Task t JOIN t.goals g WHERE g.user.id = :userId AND t.status = :status GROUP BY g.id")
+    List<Object[]> countByStatusGroupedByUser(Long userId, TaskStatus status);
 }

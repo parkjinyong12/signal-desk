@@ -5,7 +5,7 @@ import { Task, EnergyLevel, Goal } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { priorityLabel, priorityColor, formatDeadline, goalTypeLabel } from '@/lib/utils'
+import { priorityLabel, priorityColor, formatDeadline, goalTypeLabel, GOAL_TYPE_ORDER } from '@/lib/utils'
 import { Plus, Check, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 
 type FormData = {
@@ -193,27 +193,38 @@ export default function TasksPage() {
                   <option value="HIGH">높음</option>
                 </select>
               </div>
-              {goals.length > 0 && (
+              {goals.some((g) => g.status !== 'ARCHIVED') && (
                 <div>
                   <label className="text-xs text-slate-500 block mb-1">연결된 목표</label>
-                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto border border-slate-200 rounded-lg p-2">
-                    {goals.map((g) => (
-                      <label key={g.id} className="flex items-center gap-1 text-xs">
-                        <input
-                          type="checkbox"
-                          checked={form.goalIds.includes(g.id)}
-                          onChange={(e) =>
-                            setForm({
-                              ...form,
-                              goalIds: e.target.checked
-                                ? [...form.goalIds, g.id]
-                                : form.goalIds.filter((id) => id !== g.id),
-                            })
-                          }
-                        />
-                        {goalTypeLabel(g.goalType)} · {g.title}
-                      </label>
-                    ))}
+                  <div className="max-h-40 overflow-y-auto border border-slate-200 rounded-lg p-2 space-y-2">
+                    {GOAL_TYPE_ORDER.map((type) => {
+                      const goalsOfType = goals.filter((g) => g.goalType === type && g.status !== 'ARCHIVED')
+                      if (goalsOfType.length === 0) return null
+                      return (
+                        <div key={type}>
+                          <p className="text-[11px] font-semibold text-slate-400 mb-1">{goalTypeLabel(type)}</p>
+                          <div className="flex flex-wrap gap-x-3 gap-y-1">
+                            {goalsOfType.map((g) => (
+                              <label key={g.id} className="flex items-center gap-1 text-xs">
+                                <input
+                                  type="checkbox"
+                                  checked={form.goalIds.includes(g.id)}
+                                  onChange={(e) =>
+                                    setForm({
+                                      ...form,
+                                      goalIds: e.target.checked
+                                        ? [...form.goalIds, g.id]
+                                        : form.goalIds.filter((id) => id !== g.id),
+                                    })
+                                  }
+                                />
+                                {g.title}
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               )}

@@ -36,14 +36,17 @@ export interface Task {
   goalIds: number[]
 }
 
-export type GoalType = 'LIFE' | 'YEARLY' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY'
+export type GoalType = 'LIFE' | 'MID_TERM' | 'YEARLY' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY'
+export type GoalStatus = 'ACTIVE' | 'COMPLETED' | 'ARCHIVED'
 
 export interface Goal {
   id: number
   title: string
   description?: string
   goalType: GoalType
+  status: GoalStatus
   parentId?: number
+  parentTitle?: string
   targetDate?: string
   progress: number
   linkedTaskCount: number

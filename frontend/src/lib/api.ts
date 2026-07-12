@@ -26,9 +26,13 @@ export const tasksApi = {
 export const goalsApi = {
   list: () => request<Goal[]>('/goals'),
   get: (id: number) => request<Goal>(`/goals/${id}`),
+  children: (id: number) => request<Goal[]>(`/goals/${id}/children`),
+  tasks: (id: number) => request<Task[]>(`/goals/${id}/tasks`),
   create: (data: Partial<Goal>) => request<Goal>('/goals', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: number, data: Partial<Goal>) =>
     request<Goal>(`/goals/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  updateStatus: (id: number, status: string) =>
+    request<Goal>(`/goals/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
   delete: (id: number) => request<void>(`/goals/${id}`, { method: 'DELETE' }),
 }
 

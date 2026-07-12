@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { PriorityLevel, BlockType, GoalType } from '@/types'
+import { PriorityLevel, BlockType, GoalType, GoalStatus } from '@/types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -54,11 +54,12 @@ export function blockTypeColor(type: BlockType): string {
   return map[type] ?? 'bg-slate-50 border-slate-200'
 }
 
-export const GOAL_TYPE_ORDER: GoalType[] = ['LIFE', 'YEARLY', 'QUARTERLY', 'MONTHLY', 'WEEKLY']
+export const GOAL_TYPE_ORDER: GoalType[] = ['LIFE', 'MID_TERM', 'YEARLY', 'QUARTERLY', 'MONTHLY', 'WEEKLY']
 
 export function goalTypeLabel(type: GoalType): string {
   const map: Record<GoalType, string> = {
     LIFE: '인생',
+    MID_TERM: '중장기',
     YEARLY: '연간',
     QUARTERLY: '분기',
     MONTHLY: '월간',
@@ -70,12 +71,31 @@ export function goalTypeLabel(type: GoalType): string {
 export function goalTypeColor(type: GoalType): string {
   const map: Record<GoalType, string> = {
     LIFE: 'bg-purple-100 text-purple-700 border-purple-200',
+    MID_TERM: 'bg-indigo-100 text-indigo-700 border-indigo-200',
     YEARLY: 'bg-blue-100 text-blue-700 border-blue-200',
     QUARTERLY: 'bg-teal-100 text-teal-700 border-teal-200',
     MONTHLY: 'bg-green-100 text-green-700 border-green-200',
     WEEKLY: 'bg-amber-100 text-amber-700 border-amber-200',
   }
   return map[type] ?? 'bg-slate-100 text-slate-600 border-slate-200'
+}
+
+export function goalStatusLabel(status: GoalStatus): string {
+  const map: Record<GoalStatus, string> = {
+    ACTIVE: '진행중',
+    COMPLETED: '완료',
+    ARCHIVED: '보관됨',
+  }
+  return map[status] ?? status
+}
+
+export function goalStatusColor(status: GoalStatus): string {
+  const map: Record<GoalStatus, string> = {
+    ACTIVE: 'bg-blue-50 text-blue-600 border-blue-200',
+    COMPLETED: 'bg-green-100 text-green-700 border-green-200',
+    ARCHIVED: 'bg-slate-100 text-slate-500 border-slate-200',
+  }
+  return map[status] ?? 'bg-slate-100 text-slate-600 border-slate-200'
 }
 
 export function formatTime(timeStr?: string): string {

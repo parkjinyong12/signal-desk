@@ -2,7 +2,9 @@ package com.signaldesk.api.controller;
 
 import com.signaldesk.api.dto.GoalRequest;
 import com.signaldesk.api.dto.GoalResponse;
+import com.signaldesk.api.dto.TaskResponse;
 import com.signaldesk.domain.entity.Goal;
+import com.signaldesk.domain.entity.enums.GoalStatus;
 import com.signaldesk.domain.service.GoalService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/goals")
@@ -23,18 +26,34 @@ public class GoalController {
 
     @GetMapping
     public List<GoalResponse> getGoals() {
+        Map<Long, GoalService.GoalProgress> progress = goalService.computeProgressForUser(DEFAULT_USER_ID);
         return goalService.getAllGoals(DEFAULT_USER_ID).stream()
-            .map(g -> GoalResponse.from(g,
-                goalService.countLinkedTasks(g.getId()),
-                goalService.countCompletedTasks(g.getId())))
+            .map(g -> toResponse(g, progress))
             .toList();
     }
 
     @GetMapping("/{id}")
     public GoalResponse getGoal(@PathVariable Long id) {
         Goal goal = goalService.getGoal(id);
-        return GoalResponse.from(goal,
-            goalService.countLinkedTasks(id), goalService.countCompletedTasks(id));
+        Map<Long, GoalService.GoalProgress> progress = goalService.computeProgressForUser(DEFAULT_USER_ID);
+        return toResponse(goal, progress);
+    }
+
+    @GetMapping("/{id}/children")
+    public List<GoalResponse> getChildren(@PathVariable Long id) {
+        goalService.getGoal(id);
+        Map<Long, GoalService.GoalProgress> progress = goalService.computeProgressForUser(DEFAULT_USER_ID);
+        return goalService.getChildren(id).stream()
+            .map(g -> toResponse(g, progress))
+            .toList();
+    }
+
+    @GetMapping("/{id}/tasks")
+    public List<TaskResponse> getLinkedTasks(@PathVariable Long id) {
+        goalService.getGoal(id);
+        return goalService.getLinkedTasks(id).stream()
+            .map(TaskResponse::from)
+            .toList();
     }
 
     @PostMapping
@@ -46,7 +65,7 @@ public class GoalController {
             .targetDate(req.getTargetDate())
             .build();
         Goal saved = goalService.createGoal(DEFAULT_USER_ID, goal, req.getParentId());
-        return GoalResponse.from(saved, 0, 0);
+        return GoalResponse.from(saved, 0, 0, 0);
     }
 
     @PutMapping("/{id}")
@@ -58,13 +77,26 @@ public class GoalController {
             .targetDate(req.getTargetDate())
             .build();
         Goal saved = goalService.updateGoal(id, goal, req.getParentId());
-        return GoalResponse.from(saved,
-            goalService.countLinkedTasks(id), goalService.countCompletedTasks(id));
+        Map<Long, GoalService.GoalProgress> progress = goalService.computeProgressForUser(DEFAULT_USER_ID);
+        return toResponse(saved, progress);
+    }
+
+    @PatchMapping("/{id}/status")
+    public GoalResponse updateStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        GoalStatus status = GoalStatus.valueOf(body.get("status"));
+        Goal saved = goalService.updateStatus(id, status);
+        Map<Long, GoalService.GoalProgress> progress = goalService.computeProgressForUser(DEFAULT_USER_ID);
+        return toResponse(saved, progress);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGoal(@PathVariable Long id) {
         goalService.deleteGoal(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private GoalResponse toResponse(Goal goal, Map<Long, GoalService.GoalProgress> progressMap) {
+        GoalService.GoalProgress p = progressMap.getOrDefault(goal.getId(), GoalService.GoalProgress.ZERO);
+        return GoalResponse.from(goal, p.progress(), p.linkedTaskCount(), p.completedTaskCount());
     }
 }
