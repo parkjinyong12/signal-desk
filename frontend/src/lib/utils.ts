@@ -112,3 +112,35 @@ export function formatDeadline(deadline?: string): string {
   if (diff < 24) return `${diff}시간 후 마감`
   return `${Math.ceil(diff / 24)}일 후 마감`
 }
+
+function daysUntil(targetDate: string): number {
+  const target = new Date(targetDate + 'T00:00:00')
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+}
+
+export function goalDDayLabel(targetDate?: string): string {
+  if (!targetDate) return ''
+  const days = daysUntil(targetDate)
+  if (days === 0) return 'D-Day'
+  if (days > 0) return `D-${days}`
+  return `D+${Math.abs(days)} 지남`
+}
+
+export function goalDDayColor(targetDate?: string): string {
+  if (!targetDate) return 'text-slate-400'
+  const days = daysUntil(targetDate)
+  if (days < 0) return 'text-red-500'
+  if (days <= 7) return 'text-orange-500'
+  return 'text-slate-400'
+}
+
+export function goalDDayBadgeColor(targetDate?: string): string {
+  if (!targetDate) return 'bg-slate-100 text-slate-500 border-slate-200'
+  const days = daysUntil(targetDate)
+  if (days < 0) return 'bg-red-100 text-red-700 border-red-200'
+  if (days <= 7) return 'bg-orange-100 text-orange-700 border-orange-200'
+  if (days <= 30) return 'bg-amber-50 text-amber-600 border-amber-200'
+  return 'bg-slate-100 text-slate-500 border-slate-200'
+}

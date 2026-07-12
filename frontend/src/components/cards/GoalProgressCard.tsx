@@ -2,6 +2,8 @@
 import Link from 'next/link'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Goal } from '@/types'
+import { goalDDayLabel, goalDDayBadgeColor } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 import { Target } from 'lucide-react'
 
 interface Props {
@@ -37,7 +39,14 @@ export function GoalProgressCard({ goals }: Props) {
                 <Link href={`/planning/${goal.id}`} className="block">
                   <div className="flex items-center justify-between text-sm mb-1">
                     <span className="text-slate-700 font-medium truncate">{goal.title}</span>
-                    <span className="text-xs text-slate-400 flex-shrink-0 ml-2">{goal.progress}%</span>
+                    <span className="flex items-center gap-2 flex-shrink-0 ml-2">
+                      {goal.targetDate && (
+                        <Badge className={goalDDayBadgeColor(goal.targetDate)}>
+                          {goalDDayLabel(goal.targetDate)}
+                        </Badge>
+                      )}
+                      <span className="text-xs text-slate-400">{goal.progress}%</span>
+                    </span>
                   </div>
                   <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                     <div

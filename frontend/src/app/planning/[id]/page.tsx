@@ -14,6 +14,8 @@ import {
   goalTypeColor,
   goalStatusLabel,
   goalStatusColor,
+  goalDDayLabel,
+  goalDDayBadgeColor,
   priorityLabel,
   priorityColor,
 } from '@/lib/utils'
@@ -144,6 +146,11 @@ export default function GoalDetailPage() {
                     <h1 className="text-lg font-bold text-slate-800">{goal.title}</h1>
                     <Badge className={goalTypeColor(goal.goalType)}>{goalTypeLabel(goal.goalType)}</Badge>
                     <Badge className={goalStatusColor(goal.status)}>{goalStatusLabel(goal.status)}</Badge>
+                    {goal.targetDate && goal.status === 'ACTIVE' && (
+                      <Badge className={goalDDayBadgeColor(goal.targetDate)}>
+                        {goalDDayLabel(goal.targetDate)}
+                      </Badge>
+                    )}
                   </div>
                   {goal.targetDate && <p className="text-xs text-slate-400">목표일: {goal.targetDate}</p>}
                 </div>
@@ -162,7 +169,9 @@ export default function GoalDetailPage() {
                   </button>
                 </div>
               </div>
-              {goal.description && <p className="text-sm text-slate-600 mt-2">{goal.description}</p>}
+              {goal.description && (
+                <p className="text-sm text-slate-600 mt-2 whitespace-pre-wrap">{goal.description}</p>
+              )}
 
               <div className="mt-4">
                 <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
@@ -233,6 +242,11 @@ export default function GoalDetailPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-medium text-slate-800">{child.title}</span>
                         <Badge className={goalStatusColor(child.status)}>{goalStatusLabel(child.status)}</Badge>
+                        {child.targetDate && child.status === 'ACTIVE' && (
+                          <Badge className={goalDDayBadgeColor(child.targetDate)}>
+                            {goalDDayLabel(child.targetDate)}
+                          </Badge>
+                        )}
                         <span className="text-xs text-slate-400 ml-auto">{child.progress}%</span>
                       </div>
                       <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-1.5">

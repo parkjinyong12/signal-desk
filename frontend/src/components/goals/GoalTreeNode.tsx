@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { Goal } from '@/types'
 import { Badge } from '@/components/ui/badge'
-import { goalTypeLabel, goalTypeColor, goalStatusLabel, goalStatusColor } from '@/lib/utils'
+import { goalTypeLabel, goalTypeColor, goalStatusLabel, goalStatusColor, goalDDayLabel, goalDDayBadgeColor } from '@/lib/utils'
 import { ChevronRight, ChevronDown } from 'lucide-react'
 
 interface GoalTreeNodeProps {
@@ -39,6 +39,9 @@ export function GoalTreeNode({ goal, depth, childrenByParentId, collapsed, onTog
           <Badge className={goalTypeColor(goal.goalType)}>{goalTypeLabel(goal.goalType)}</Badge>
           {goal.status !== 'ACTIVE' && (
             <Badge className={goalStatusColor(goal.status)}>{goalStatusLabel(goal.status)}</Badge>
+          )}
+          {goal.targetDate && goal.status === 'ACTIVE' && (
+            <Badge className={goalDDayBadgeColor(goal.targetDate)}>{goalDDayLabel(goal.targetDate)}</Badge>
           )}
           <span className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden flex-shrink-0 inline-block">
             <span className="h-full bg-brand-500 rounded-full block" style={{ width: `${goal.progress}%` }} />
