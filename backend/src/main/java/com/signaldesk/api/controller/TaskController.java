@@ -47,7 +47,7 @@ public class TaskController {
             .urgencyScore(req.getUrgencyScore())
             .energyLevel(req.getEnergyLevel() != null ? req.getEnergyLevel() : EnergyLevel.MEDIUM)
             .build();
-        return TaskResponse.from(taskService.createTask(DEFAULT_USER_ID, task));
+        return TaskResponse.from(taskService.createTask(DEFAULT_USER_ID, task, req.getGoalIds()));
     }
 
     @PutMapping("/{id}")
@@ -62,7 +62,7 @@ public class TaskController {
             .urgencyScore(req.getUrgencyScore())
             .energyLevel(req.getEnergyLevel() != null ? req.getEnergyLevel() : EnergyLevel.MEDIUM)
             .build();
-        return TaskResponse.from(taskService.updateTask(id, task));
+        return TaskResponse.from(taskService.updateTask(id, task, req.getGoalIds()));
     }
 
     @PatchMapping("/{id}/status")

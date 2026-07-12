@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class TaskRequest {
@@ -17,4 +19,5 @@ public class TaskRequest {
     private Integer importanceScore = 5;
     private Integer urgencyScore = 5;
     private EnergyLevel energyLevel = EnergyLevel.MEDIUM;
+    private List<Long> goalIds = new ArrayList<>();
 }

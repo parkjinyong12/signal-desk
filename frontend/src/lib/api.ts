@@ -1,4 +1,4 @@
-import { Task, UserInterest, NewsArticle, DailyBriefing } from '@/types'
+import { Task, UserInterest, NewsArticle, DailyBriefing, Goal } from '@/types'
 
 const BASE = '/api'
 
@@ -21,6 +21,15 @@ export const tasksApi = {
   updateStatus: (id: number, status: string) =>
     request<Task>(`/tasks/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
   delete: (id: number) => request<void>(`/tasks/${id}`, { method: 'DELETE' }),
+}
+
+export const goalsApi = {
+  list: () => request<Goal[]>('/goals'),
+  get: (id: number) => request<Goal>(`/goals/${id}`),
+  create: (data: Partial<Goal>) => request<Goal>('/goals', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: number, data: Partial<Goal>) =>
+    request<Goal>(`/goals/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: number) => request<void>(`/goals/${id}`, { method: 'DELETE' }),
 }
 
 export const interestsApi = {

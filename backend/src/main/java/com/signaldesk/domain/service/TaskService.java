@@ -1,16 +1,20 @@
 package com.signaldesk.domain.service;
 
 import com.signaldesk.application.service.PriorityCalculationService;
+import com.signaldesk.domain.entity.Goal;
 import com.signaldesk.domain.entity.Task;
 import com.signaldesk.domain.entity.User;
 import com.signaldesk.domain.entity.enums.TaskStatus;
+import com.signaldesk.domain.repository.GoalRepository;
 import com.signaldesk.domain.repository.TaskRepository;
 import com.signaldesk.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +23,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final GoalRepository goalRepository;
     private final PriorityCalculationService priorityCalculationService;
 
     public List<Task> getActiveTasks(Long userId) {
@@ -35,16 +40,17 @@ public class TaskService {
     }
 
     @Transactional
-    public Task createTask(Long userId, Task task) {
+    public Task createTask(Long userId, Task task, List<Long> goalIds) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found: " + userId));
         task.setUser(user);
+        task.setGoals(resolveGoals(goalIds));
         priorityCalculationService.calculate(task);
         return taskRepository.save(task);
     }
 
     @Transactional
-    public Task updateTask(Long id, Task updated) {
+    public Task updateTask(Long id, Task updated, List<Long> goalIds) {
         Task task = getTask(id);
         task.setTitle(updated.getTitle());
         task.setDescription(updated.getDescription());
@@ -54,8 +60,14 @@ public class TaskService {
         task.setImportanceScore(updated.getImportanceScore());
         task.setUrgencyScore(updated.getUrgencyScore());
         task.setEnergyLevel(updated.getEnergyLevel());
+        task.setGoals(resolveGoals(goalIds));
         priorityCalculationService.calculate(task);
         return taskRepository.save(task);
+    }
+
+    private Set<Goal> resolveGoals(List<Long> goalIds) {
+        if (goalIds == null || goalIds.isEmpty()) return new HashSet<>();
+        return new HashSet<>(goalRepository.findAllById(goalIds));
     }
 
     @Transactional

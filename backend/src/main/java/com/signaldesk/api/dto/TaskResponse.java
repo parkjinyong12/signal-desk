@@ -1,5 +1,6 @@
 package com.signaldesk.api.dto;
 
+import com.signaldesk.domain.entity.Goal;
 import com.signaldesk.domain.entity.Task;
 import com.signaldesk.domain.entity.enums.EnergyLevel;
 import com.signaldesk.domain.entity.enums.PriorityLevel;
@@ -7,6 +8,7 @@ import com.signaldesk.domain.entity.enums.TaskStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class TaskResponse {
@@ -26,6 +28,7 @@ public class TaskResponse {
     private LocalDateTime recommendedEndTime;
     private String reason;
     private LocalDateTime createdAt;
+    private List<Long> goalIds;
 
     public static TaskResponse from(Task task) {
         TaskResponse r = new TaskResponse();
@@ -45,6 +48,7 @@ public class TaskResponse {
         r.setRecommendedEndTime(task.getRecommendedEndTime());
         r.setReason(task.getReason());
         r.setCreatedAt(task.getCreatedAt());
+        r.setGoalIds(task.getGoals().stream().map(Goal::getId).sorted().toList());
         return r;
     }
 }

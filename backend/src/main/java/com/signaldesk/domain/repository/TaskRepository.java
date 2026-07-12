@@ -19,4 +19,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT t FROM Task t WHERE t.user.id = :userId AND t.deadline BETWEEN :start AND :end AND t.status NOT IN ('DONE','CANCELLED')")
     List<Task> findTasksDueToday(Long userId, LocalDateTime start, LocalDateTime end);
+
+    long countByGoals_Id(Long goalId);
+    long countByGoals_IdAndStatus(Long goalId, TaskStatus status);
+    List<Task> findByGoals_Id(Long goalId);
 }

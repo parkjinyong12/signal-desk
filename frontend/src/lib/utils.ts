@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { PriorityLevel, BlockType } from '@/types'
+import { PriorityLevel, BlockType, GoalType } from '@/types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -52,6 +52,30 @@ export function blockTypeColor(type: BlockType): string {
     BREAK: 'bg-gray-50 border-gray-200',
   }
   return map[type] ?? 'bg-slate-50 border-slate-200'
+}
+
+export const GOAL_TYPE_ORDER: GoalType[] = ['LIFE', 'YEARLY', 'QUARTERLY', 'MONTHLY', 'WEEKLY']
+
+export function goalTypeLabel(type: GoalType): string {
+  const map: Record<GoalType, string> = {
+    LIFE: '인생',
+    YEARLY: '연간',
+    QUARTERLY: '분기',
+    MONTHLY: '월간',
+    WEEKLY: '주간',
+  }
+  return map[type] ?? type
+}
+
+export function goalTypeColor(type: GoalType): string {
+  const map: Record<GoalType, string> = {
+    LIFE: 'bg-purple-100 text-purple-700 border-purple-200',
+    YEARLY: 'bg-blue-100 text-blue-700 border-blue-200',
+    QUARTERLY: 'bg-teal-100 text-teal-700 border-teal-200',
+    MONTHLY: 'bg-green-100 text-green-700 border-green-200',
+    WEEKLY: 'bg-amber-100 text-amber-700 border-amber-200',
+  }
+  return map[type] ?? 'bg-slate-100 text-slate-600 border-slate-200'
 }
 
 export function formatTime(timeStr?: string): string {

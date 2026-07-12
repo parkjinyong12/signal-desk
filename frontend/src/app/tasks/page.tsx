@@ -1,11 +1,11 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
-import { tasksApi } from '@/lib/api'
-import { Task, EnergyLevel } from '@/types'
+import { tasksApi, goalsApi } from '@/lib/api'
+import { Task, EnergyLevel, Goal } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { priorityLabel, priorityColor, formatDeadline } from '@/lib/utils'
+import { priorityLabel, priorityColor, formatDeadline, goalTypeLabel } from '@/lib/utils'
 import { Plus, Check, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 
 type FormData = {
@@ -17,6 +17,7 @@ type FormData = {
   importanceScore: number
   urgencyScore: number
   energyLevel: EnergyLevel
+  goalIds: number[]
 }
 
 const defaultForm: FormData = {
@@ -28,10 +29,12 @@ const defaultForm: FormData = {
   importanceScore: 5,
   urgencyScore: 5,
   energyLevel: 'MEDIUM',
+  goalIds: [],
 }
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([])
+  const [goals, setGoals] = useState<Goal[]>([])
   const [showForm, setShowForm] = useState(false)
   const [editId, setEditId] = useState<number | null>(null)
   const [form, setForm] = useState<FormData>(defaultForm)
@@ -42,7 +45,10 @@ export default function TasksPage() {
     setTasks(data)
   }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    load()
+    goalsApi.list().then(setGoals)
+  }, [load])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,6 +93,7 @@ export default function TasksPage() {
       importanceScore: task.importanceScore,
       urgencyScore: task.urgencyScore,
       energyLevel: task.energyLevel,
+      goalIds: task.goalIds,
     })
     setEditId(task.id)
     setShowForm(true)
@@ -186,6 +193,30 @@ export default function TasksPage() {
                   <option value="HIGH">높음</option>
                 </select>
               </div>
+              {goals.length > 0 && (
+                <div>
+                  <label className="text-xs text-slate-500 block mb-1">연결된 목표</label>
+                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto border border-slate-200 rounded-lg p-2">
+                    {goals.map((g) => (
+                      <label key={g.id} className="flex items-center gap-1 text-xs">
+                        <input
+                          type="checkbox"
+                          checked={form.goalIds.includes(g.id)}
+                          onChange={(e) =>
+                            setForm({
+                              ...form,
+                              goalIds: e.target.checked
+                                ? [...form.goalIds, g.id]
+                                : form.goalIds.filter((id) => id !== g.id),
+                            })
+                          }
+                        />
+                        {goalTypeLabel(g.goalType)} · {g.title}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="flex gap-2 pt-1">
                 <Button type="submit" disabled={loading} className="flex-1">
                   {loading ? '저장 중...' : editId ? '수정' : '등록'}

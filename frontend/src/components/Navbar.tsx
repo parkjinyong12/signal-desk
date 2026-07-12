@@ -2,11 +2,12 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, CheckSquare, Star, Newspaper, Settings } from 'lucide-react'
+import { LayoutDashboard, CheckSquare, Target, Star, Newspaper, Settings } from 'lucide-react'
 
 const navItems = [
   { href: '/dashboard', label: '대시보드', icon: LayoutDashboard },
   { href: '/tasks', label: '할 일', icon: CheckSquare },
+  { href: '/planning', label: '계획', icon: Target },
   { href: '/interests', label: '관심', icon: Star },
   { href: '/news', label: '뉴스', icon: Newspaper },
   { href: '/settings', label: '설정', icon: Settings },
@@ -52,7 +53,7 @@ export function Navbar() {
 
       {/* Mobile bottom tab bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-100 sm:hidden">
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-6">
           {navItems.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}

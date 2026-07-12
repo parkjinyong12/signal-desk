@@ -33,6 +33,22 @@ export interface Task {
   recommendedEndTime?: string
   reason?: string
   createdAt: string
+  goalIds: number[]
+}
+
+export type GoalType = 'LIFE' | 'YEARLY' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY'
+
+export interface Goal {
+  id: number
+  title: string
+  description?: string
+  goalType: GoalType
+  parentId?: number
+  targetDate?: string
+  progress: number
+  linkedTaskCount: number
+  completedTaskCount: number
+  createdAt: string
 }
 
 export interface UserInterest {
