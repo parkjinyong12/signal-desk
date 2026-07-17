@@ -2,6 +2,7 @@ package com.signaldesk.infrastructure;
 
 import com.signaldesk.application.service.NewsScoreService;
 import com.signaldesk.application.service.RssCollectionService;
+import com.signaldesk.application.service.TelegramNotificationService;
 import com.signaldesk.domain.entity.NewsArticle;
 import com.signaldesk.domain.entity.UserInterest;
 import com.signaldesk.domain.repository.NewsArticleRepository;
@@ -26,6 +27,7 @@ public class MorningBriefingScheduler {
     private final UserInterestRepository interestRepository;
     private final NewsScoreService newsScoreService;
     private final BriefingService briefingService;
+    private final TelegramNotificationService telegramNotificationService;
 
     // 매일 06:50 — RSS 뉴스 수집
     @Scheduled(cron = "0 50 6 * * *", zone = "Asia/Seoul")
@@ -68,6 +70,13 @@ public class MorningBriefingScheduler {
             log.info("[스케줄러] 07:05 브리핑 생성 완료 — 07:10 확인 가능");
         } catch (Exception e) {
             log.error("[스케줄러] 브리핑 생성 실패", e);
+            return;
+        }
+
+        try {
+            telegramNotificationService.sendMorningNotification();
+        } catch (Exception e) {
+            log.error("[스케줄러] 텔레그램 알림 전송 실패", e);
         }
     }
 }

@@ -56,7 +56,7 @@ export default function TasksPage() {
     try {
       const payload = {
         ...form,
-        deadline: form.deadline ? new Date(form.deadline).toISOString() : undefined,
+        deadline: form.deadline ? `${form.deadline}:00` : undefined,
       }
       if (editId) {
         await tasksApi.update(editId, payload)
@@ -154,31 +154,33 @@ export default function TasksPage() {
                     min={5}
                     max={480}
                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    value={form.estimatedMinutes}
-                    onChange={(e) => setForm({ ...form, estimatedMinutes: Number(e.target.value) })}
+                    value={form.estimatedMinutes || ''}
+                    onChange={(e) => setForm({ ...form, estimatedMinutes: e.target.value === '' ? 0 : Number(e.target.value) })}
                   />
                 </div>
                 <div>
                   <label className="text-xs text-slate-500 block mb-1">중요도 (1-10)</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={10}
+                  <select
                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     value={form.importanceScore}
                     onChange={(e) => setForm({ ...form, importanceScore: Number(e.target.value) })}
-                  />
+                  >
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="text-xs text-slate-500 block mb-1">긴급도 (1-10)</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={10}
+                  <select
                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     value={form.urgencyScore}
                     onChange={(e) => setForm({ ...form, urgencyScore: Number(e.target.value) })}
-                  />
+                  >
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div>

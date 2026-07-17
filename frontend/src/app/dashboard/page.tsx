@@ -7,7 +7,7 @@ import { NewsBriefingCard } from '@/components/cards/NewsBriefingCard'
 import { JudgementCard } from '@/components/cards/JudgementCard'
 import { DeferredTasksCard } from '@/components/cards/DeferredTasksCard'
 import { BriefingRequestCard } from '@/components/cards/BriefingRequestCard'
-import { GoalProgressCard } from '@/components/cards/GoalProgressCard'
+import { UpcomingGoalsCard } from '@/components/cards/UpcomingGoalsCard'
 import { briefingApi, tasksApi, briefingRequestsApi, goalsApi, BriefingRequest } from '@/lib/api'
 import { DailyBriefing, Task, Goal } from '@/types'
 
@@ -72,7 +72,7 @@ export default function DashboardPage() {
         <JudgementCard items={items} />
 
         <div className="lg:col-span-2">
-          <GoalProgressCard goals={goals} />
+          <UpcomingGoalsCard goals={goals} />
         </div>
 
         <div className="lg:col-span-2">

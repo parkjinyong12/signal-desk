@@ -17,6 +17,7 @@ public class GoalResponse {
     private GoalStatus status;
     private Long parentId;
     private String parentTitle;
+    private LocalDate parentTargetDate;
     private LocalDate targetDate;
     private int progress;
     private long linkedTaskCount;
@@ -32,6 +33,7 @@ public class GoalResponse {
         r.setStatus(goal.getStatus());
         r.setParentId(goal.getParent() != null ? goal.getParent().getId() : null);
         r.setParentTitle(goal.getParent() != null ? goal.getParent().getTitle() : null);
+        r.setParentTargetDate(goal.getParent() != null ? goal.getParent().getTargetDate() : null);
         r.setTargetDate(goal.getTargetDate());
         r.setLinkedTaskCount(linkedTaskCount);
         r.setCompletedTaskCount(completedTaskCount);

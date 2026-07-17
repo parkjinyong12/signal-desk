@@ -80,6 +80,30 @@ export function goalTypeColor(type: GoalType): string {
   return map[type] ?? 'bg-slate-100 text-slate-600 border-slate-200'
 }
 
+export function goalTypeDotColor(type: GoalType): string {
+  const map: Record<GoalType, string> = {
+    LIFE: 'bg-purple-500',
+    MID_TERM: 'bg-indigo-500',
+    YEARLY: 'bg-blue-500',
+    QUARTERLY: 'bg-teal-500',
+    MONTHLY: 'bg-green-500',
+    WEEKLY: 'bg-amber-500',
+  }
+  return map[type] ?? 'bg-slate-400'
+}
+
+export function goalTypeTextColor(type: GoalType): string {
+  const map: Record<GoalType, string> = {
+    LIFE: 'text-purple-600',
+    MID_TERM: 'text-indigo-600',
+    YEARLY: 'text-blue-600',
+    QUARTERLY: 'text-teal-600',
+    MONTHLY: 'text-green-600',
+    WEEKLY: 'text-amber-600',
+  }
+  return map[type] ?? 'text-slate-500'
+}
+
 export function goalStatusLabel(status: GoalStatus): string {
   const map: Record<GoalStatus, string> = {
     ACTIVE: '진행중',
@@ -113,19 +137,36 @@ export function formatDeadline(deadline?: string): string {
   return `${Math.ceil(diff / 24)}일 후 마감`
 }
 
-function daysUntil(targetDate: string): number {
+export function daysUntil(targetDate: string): number {
   const target = new Date(targetDate + 'T00:00:00')
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   return Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 }
 
+function yearsAndDaysLabel(totalDays: number): string {
+  const years = Math.floor(totalDays / 365)
+  const remainder = totalDays % 365
+  return `${years}년 ${remainder}일`
+}
+
 export function goalDDayLabel(targetDate?: string): string {
   if (!targetDate) return ''
-  const days = daysUntil(targetDate)
-  if (days === 0) return 'D-Day'
-  if (days > 0) return `D-${days}`
-  return `D+${Math.abs(days)} 지남`
+  const days = Math.abs(daysUntil(targetDate))
+  if (days === 0) return '오늘'
+  return days > 365 ? yearsAndDaysLabel(days) : `${days}일`
+}
+
+export function goalTargetDateWave(targetDate?: string): string {
+  if (!targetDate) return ''
+  const [y, m, d] = targetDate.split('-')
+  return `~${y}.${m}.${d}`
+}
+
+const TARGET_DATE_SUFFIX_PATTERN = /\s*\(~\d{2,4}\.\d{1,2}\.\d{1,2}\)\s*$/
+
+export function stripTargetDateSuffix(title: string): string {
+  return title.replace(TARGET_DATE_SUFFIX_PATTERN, '')
 }
 
 export function goalDDayColor(targetDate?: string): string {

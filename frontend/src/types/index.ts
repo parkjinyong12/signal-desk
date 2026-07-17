@@ -47,6 +47,7 @@ export interface Goal {
   status: GoalStatus
   parentId?: number
   parentTitle?: string
+  parentTargetDate?: string
   targetDate?: string
   progress: number
   linkedTaskCount: number
